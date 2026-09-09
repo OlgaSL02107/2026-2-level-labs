@@ -24,4 +24,4 @@ def main() -> None:
 if __name__ == "__main__":
     main()
 
-print('Work done 3 try')
+print('Work done')
