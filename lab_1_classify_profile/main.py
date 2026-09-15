@@ -27,6 +27,26 @@ def tokenize(text: str) -> Sequence[str] | None:
         Returns None if input text is not a string.
     """
 
+    if not isinstance(text, str):
+        return None
+
+    tokens = []
+    current_token = []
+    in_symbols = "'-"
+
+    for symbol in text:
+        if symbol.isalpha():
+            current_token.append(symbol.lower())
+        elif symbol.isspace():
+            if current_token:
+                tokens.append(''.join(current_token))
+                current_token = []
+
+    if current_token:
+        tokens.append(''.join(current_token))
+
+    return tokens
+
 
 def remove_stop_words(tokens: Sequence[str], stop_words: Sequence[str]) -> Sequence[str] | None:
     """
@@ -39,6 +59,26 @@ def remove_stop_words(tokens: Sequence[str], stop_words: Sequence[str]) -> Seque
         Sequence[str] | None: Sequence of tokens without stop words.
         Returns None in case of incorrect input types.
     """
+
+    if not isinstance(tokens, (list, tuple)):
+        return None
+
+    for token in tokens:
+        if not isinstance(token, str):
+            return None
+
+    if not isinstance(stop_words, (list, tuple)):
+        return None
+
+    for word in stop_words:
+        if not isinstance(word, str):
+            return None
+
+    filtered_tokens = [token for token in tokens if not (token in stop_words)]
+
+    return filtered_tokens
+
+
 
 
 def calculate_frequencies(tokens: Sequence[str]) -> dict[str, float] | None:

@@ -4,6 +4,7 @@ Language detection starter.
 
 # pylint: disable=unused-variable, duplicate-code
 
+from main import tokenize, remove_stop_words
 
 def main() -> None:
     """
@@ -20,8 +21,20 @@ def main() -> None:
     result = None
     assert result, "Detection result is None"
 
+    de_tokens = tokenize(de_text)
+    unknown_tokens = tokenize(unknown_text)
+    en_tokens = tokenize(en_text)
+
+    if de_tokens is None or unknown_tokens is None or en_tokens is None:
+        return None
+
+    de_filtered = remove_stop_words(de_tokens, stopwords)
+    unknown_filtered = remove_stop_words(unknown_tokens, stopwords)
+    en_filtered = remove_stop_words(en_tokens, stopwords)
+
+    if de_filtered is None or unknown_filtered is None or en_filtered is None:
+        return None
+
 
 if __name__ == "__main__":
     main()
-
-print('Work done')
