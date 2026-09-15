@@ -6,6 +6,7 @@ Language detection starter.
 
 from main import tokenize, remove_stop_words
 
+
 def main() -> None:
     """
     Launches an implementation.
