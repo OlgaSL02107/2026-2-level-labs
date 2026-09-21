@@ -19,37 +19,25 @@ def main() -> None:
         en_text = file.read()
 
 
-
-    from main import calculate_frequencies, get_top_n_words, remove_stop_words, tokenize
-
-
-    de_tokens = tokenize(de_text)
-    #unknown_tokens = tokenize(unknown_text)
-    #en_tokens = tokenize(en_text)
-
-    if de_tokens is None: #or unknown_tokens is None or en_tokens is None:
-        return None
+    from main import check_profile, create_language_profile, detect_language_by_top_n
 
 
-    de_filtered = remove_stop_words(de_tokens, stopwords)
-    #unknown_filtered = remove_stop_words(unknown_tokens, stopwords)
-    #en_filtered = remove_stop_words(en_tokens, stopwords)
+    unknown_profile = create_language_profile('unknown', unknown_text, stopwords)
+    de_profile = create_language_profile('de', de_text, stopwords)
+    en_profile = create_language_profile('en', en_text, stopwords)
 
-    if de_filtered is None: #or unknown_filtered is None or en_filtered is None:
-        return None
-
-
-    de_frequencies = calculate_frequencies(de_filtered)
-    #unknown_frequencies = calculate_frequencies(unknown_filtered)
-    #en_frequencies = calculate_frequencies(en_filtered)
-
-    if de_frequencies is None: #or unknown_frequencies is None or en_frequencies is None:
-        return None
+    assert check_profile(unknown_profile), 'Error: Unknown profile invalid'
+    assert check_profile(de_profile), 'Error: De profile invalid'
+    assert check_profile(en_profile), 'Error: En profile invalid'
 
 
-    de_top_n_tokens = get_top_n_words(de_frequencies, 7)
-    print(de_top_n_tokens)
+    detected_lang = detect_language_by_top_n(unknown_profile, de_profile, en_profile, 15)
 
+    print(f'Detected language: {detected_lang}')
+
+
+    result = detected_lang
+    assert result, 'Detection result is None'
 
     #result = None
     #assert result, "Detection result is None"
