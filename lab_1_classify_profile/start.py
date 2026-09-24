@@ -2,9 +2,15 @@
 Language detection starter.
 """
 
-# pylint: disable=unused-variable, duplicate-code
 
-from .main import check_profile, create_language_profile, detect_language_by_mse
+from lab_1_classify_profile.main import (
+    check_profile,
+    create_language_profile,
+    detect_language_by_mse
+)
+
+
+# pylint: disable=unused-variable, duplicate-code
 
 
 def main() -> None:
@@ -28,7 +34,6 @@ def main() -> None:
     assert check_profile(unknown_profile), 'Error: Unknown profile invalid'
     assert check_profile(de_profile), 'Error: De profile invalid'
     assert check_profile(en_profile), 'Error: En profile invalid'
-
 
     detected_lang = detect_language_by_mse(unknown_profile, de_profile, en_profile)
 

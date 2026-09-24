@@ -149,6 +149,7 @@ def get_top_n_words(freq_dict: dict[str, float], top_n: int) -> Sequence[str] | 
 # Mark 6.
 
 
+# pylint: disable=too-many-return-statements
 def create_language_profile(
     language: str, text: str, stop_words: Sequence[str]
 ) -> ProfileType | None:
@@ -196,6 +197,7 @@ def create_language_profile(
     return language, freq_dict, n_words
 
 
+# pylint: disable=too-many-return-statements
 def check_profile(profile: ProfileType) -> bool:
     """
     Checks profile structure
@@ -286,6 +288,7 @@ def compare_profiles_by_top_n(
     return distance
 
 
+# pylint: disable=too-many-return-statements
 def detect_language_by_top_n(
     unknown_profile: ProfileType, profile_1: ProfileType, profile_2: ProfileType, top_n: int
 ) -> str | None:
@@ -333,8 +336,7 @@ def detect_language_by_top_n(
     if score_2 > score_1:
         return language_2
 
-    if score_1 == score_2:
-        return min(language_1, language_2)
+    return min(language_1, language_2)
 
 
 # Mark 8
@@ -431,6 +433,7 @@ def compare_profiles_by_mse(
     return mse
 
 
+# pylint: disable=too-many-return-statements
 def detect_language_by_mse(
     unknown_profile: ProfileType, profile_1: ProfileType, profile_2: ProfileType
 ) -> str | None:
@@ -475,8 +478,7 @@ def detect_language_by_mse(
     if mse_1 > mse_2:
         return lang_2
 
-    if mse_1 == mse_2:
-        return min(lang_1, lang_2)
+    return min(lang_1, lang_2)
 
 
 # Mark 10
