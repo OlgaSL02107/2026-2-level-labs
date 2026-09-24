@@ -9,7 +9,7 @@ Language detection starter.
 from lab_1_classify_profile.main import (
     check_profile,
     create_language_profile,
-    detect_language_by_mse
+    detect_language_by_mse,
 )
 
 
