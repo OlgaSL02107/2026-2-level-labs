@@ -73,7 +73,7 @@ def remove_stop_words(tokens: Sequence[str], stop_words: Sequence[str]) -> Seque
         if not isinstance(word, str):
             return None
 
-    filtered_tokens = [token for token in tokens if not (token in stop_words)]
+    filtered_tokens = [token for token in tokens if not token in stop_words]
 
     return filtered_tokens
 
@@ -329,9 +329,11 @@ def detect_language_by_top_n(
 
     if score_1 > score_2:
         return language_1
-    elif score_2 > score_1:
+
+    if score_2 > score_1:
         return language_2
-    else:
+
+    if score_1 == score_2:
         return min(language_1, language_2)
 
 
@@ -450,10 +452,10 @@ def detect_language_by_mse(
         return None
 
     if not check_profile(profile_1):
-            return None
+        return None
 
     if not check_profile(profile_2):
-            return None
+        return None
 
 
     mse_1 = compare_profiles_by_mse(unknown_profile, profile_1)
@@ -469,9 +471,11 @@ def detect_language_by_mse(
 
     if mse_1 < mse_2:
         return lang_1
-    elif mse_1 > mse_2:
+
+    if mse_1 > mse_2:
         return lang_2
-    else:
+
+    if mse_1 == mse_2:
         return min(lang_1, lang_2)
 
 

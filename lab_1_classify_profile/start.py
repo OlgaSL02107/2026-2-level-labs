@@ -4,6 +4,8 @@ Language detection starter.
 
 # pylint: disable=unused-variable, duplicate-code
 
+from .main import check_profile, create_language_profile, detect_language_by_mse
+
 
 def main() -> None:
     """
@@ -17,9 +19,6 @@ def main() -> None:
         stopwords = file.read().split("\n")
     with open("lab_1_classify_profile/assets/texts/en.txt", "r", encoding="utf-8") as file:
         en_text = file.read()
-
-
-    from main import check_profile, create_language_profile, detect_language_by_mse
 
 
     unknown_profile = create_language_profile('unknown', unknown_text, stopwords)
