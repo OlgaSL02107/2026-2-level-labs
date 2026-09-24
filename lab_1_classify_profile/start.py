@@ -19,7 +19,7 @@ def main() -> None:
         en_text = file.read()
 
 
-    from main import check_profile, create_language_profile, detect_language_by_top_n
+    from main import check_profile, create_language_profile, detect_language_by_mse
 
 
     unknown_profile = create_language_profile('unknown', unknown_text, stopwords)
@@ -31,7 +31,7 @@ def main() -> None:
     assert check_profile(en_profile), 'Error: En profile invalid'
 
 
-    detected_lang = detect_language_by_top_n(unknown_profile, de_profile, en_profile, 15)
+    detected_lang = detect_language_by_mse(unknown_profile, de_profile, en_profile)
 
     print(f'Detected language: {detected_lang}')
 
@@ -39,8 +39,6 @@ def main() -> None:
     result = detected_lang
     assert result, 'Detection result is None'
 
-    #result = None
-    #assert result, "Detection result is None"
 
 if __name__ == "__main__":
     main()

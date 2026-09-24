@@ -32,7 +32,6 @@ def tokenize(text: str) -> Sequence[str] | None:
 
     tokens = []
     current_token = []
-    in_symbols = "'-"
 
     for symbol in text:
         if symbol.isalpha():
@@ -197,8 +196,6 @@ def create_language_profile(
     return language, freq_dict, n_words
 
 
-
-
 def check_profile(profile: ProfileType) -> bool:
     """
     Checks profile structure
@@ -237,9 +234,6 @@ def check_profile(profile: ProfileType) -> bool:
     if not isinstance(n_words, int):
         return False
 
-    if n_words != len(freq_dict):
-        return False
-
     return True
 
 
@@ -268,7 +262,7 @@ def compare_profiles_by_top_n(
     if not check_profile(profile_to_compare):
         return None
 
-    #частотн словари
+
     _, unknown_freq, _ = unknown_profile
     _, compare_freq, _ = profile_to_compare
 
@@ -358,10 +352,41 @@ def calculate_mse(predicted: Sequence[float], actual: Sequence[float]) -> float 
         In case of empty inputs, returns 0.0.
     """
 
+    if not isinstance(predicted, (list, tuple)):
+        return None
+
+    for value in predicted:
+        if not isinstance(value, float):
+            return None
+
+    if not isinstance(actual, (list, tuple)):
+        return None
+
+    for value in actual:
+        if not isinstance(value, float):
+            return None
+
+    if len(predicted) != len(actual):
+        return None
+
+    if len(predicted) == 0:
+        return 0.0
+
+
+    n = len(predicted)
+    diff_sum = 0.0
+
+    for y,p in zip(actual, predicted):
+        diff_sum += (y - p) ** 2
+
+    mse = diff_sum / n
+
+    return mse
+
 
 def compare_profiles_by_mse(
     unknown_profile: ProfileType, profile_to_compare: ProfileType
-) -> float | None:
+    ) -> float | None:
     """
     Compares two language profiles using the MSE metric.
 
@@ -374,6 +399,34 @@ def compare_profiles_by_mse(
         float | None: The distance between the profiles.
         In case of corrupt input arguments or invalid profile structure, None is returned.
     """
+
+    if not check_profile(unknown_profile):
+        return None
+
+    if not check_profile(profile_to_compare):
+        return None
+
+
+    _, unknown_freq, _ = unknown_profile
+    _, compare_freq, _ = profile_to_compare
+
+    all_tokens = set(unknown_freq.keys()) | set(compare_freq.keys())
+
+    actual_values = []
+    predicted_values = []
+
+
+    for token in all_tokens:
+        actual_freq = unknown_freq.get(token, 0.0)
+        actual_values.append(actual_freq)
+
+        predicted_freq = compare_freq.get(token, 0.0)
+        predicted_values.append(predicted_freq)
+
+
+    mse = calculate_mse(predicted_values, actual_values)
+
+    return mse
 
 
 def detect_language_by_mse(
@@ -392,6 +445,34 @@ def detect_language_by_mse(
         str | None: Unknown profile language.
         Returns None in case of incorrect input types.
     """
+
+    if not check_profile(unknown_profile):
+        return None
+
+    if not check_profile(profile_1):
+            return None
+
+    if not check_profile(profile_2):
+            return None
+
+
+    mse_1 = compare_profiles_by_mse(unknown_profile, profile_1)
+    mse_2 = compare_profiles_by_mse(unknown_profile, profile_2)
+
+    if mse_1 is None or mse_2 is None:
+        return None
+
+
+    lang_1, _, _ = profile_1
+    lang_2, _, _ = profile_2
+
+
+    if mse_1 < mse_2:
+        return lang_1
+    elif mse_1 > mse_2:
+        return lang_2
+    else:
+        return min(lang_1, lang_2)
 
 
 # Mark 10
