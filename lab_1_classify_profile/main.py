@@ -5,8 +5,8 @@ Language detection
 """
 
 # pylint:disable=unused-argument
+
 from typing import Sequence
-import json
 
 FreqDictType = dict[str, float]
 "Frequency dictionary. Contains pairs of token and its frequency."
@@ -166,10 +166,7 @@ def create_language_profile(
         Returns None in case of incorrect input types.
     """
 
-    if not isinstance(language, str):
-        return None
-
-    if not isinstance(text, str):
+    if not isinstance(language, str) or not isinstance(text, str):
         return None
 
     if not isinstance(stop_words, (list, tuple)):
@@ -181,15 +178,10 @@ def create_language_profile(
 
 
     tokens = tokenize(text)
-    if tokens is None:
-        return None
-
     filtered_tokens = remove_stop_words(tokens, stop_words)
-    if filtered_tokens is None:
-        return None
-
     freq_dict = calculate_frequencies(filtered_tokens)
-    if freq_dict is None:
+
+    if tokens is None or filtered_tokens is None or freq_dict is None:
         return None
 
     n_words = len(freq_dict)
@@ -210,26 +202,18 @@ def check_profile(profile: ProfileType) -> bool:
     """
 
 
-    if not isinstance(profile, tuple):
-        return False
-
-    if len(profile) != 3:
+    if not isinstance(profile, tuple) or len(profile) != 3:
         return False
 
 
     language, freq_dict, n_words = profile
 
 
-    if not isinstance(language, str):
-        return False
-
-    if not isinstance(freq_dict, dict):
+    if not isinstance(language, str) or not isinstance(freq_dict, dict):
         return False
 
     for key, value in freq_dict.items():
-        if not isinstance(key, str):
-            return False
-        if not isinstance(value, (int, float)):
+        if not isinstance(key, str) or not isinstance(value, (int, float)):
             return False
 
     if not isinstance(n_words, int):
@@ -355,15 +339,12 @@ def calculate_mse(predicted: Sequence[float], actual: Sequence[float]) -> float 
         In case of empty inputs, returns 0.0.
     """
 
-    if not isinstance(predicted, (list, tuple)):
+    if not isinstance(predicted, (list, tuple)) or not isinstance(actual, (list, tuple)):
         return None
 
     for value in predicted:
         if not isinstance(value, float):
             return None
-
-    if not isinstance(actual, (list, tuple)):
-        return None
 
     for value in actual:
         if not isinstance(value, float):
@@ -389,7 +370,7 @@ def calculate_mse(predicted: Sequence[float], actual: Sequence[float]) -> float 
 
 def compare_profiles_by_mse(
     unknown_profile: ProfileType, profile_to_compare: ProfileType
-    ) -> float | None:
+) -> float | None:
     """
     Compares two language profiles using the MSE metric.
 
@@ -492,24 +473,6 @@ def save_profile(profile: ProfileType, save_path: str) -> bool:
         bool: False in case of incorrect input types or if the profile
         is missing obligatory keys. True if the profile is saved.
     """
-
-    if not isinstance(profile, tuple):
-        return False
-
-    if not isinstance(save_path, str):
-        return False
-
-    if not check_profile(profile):
-        return False
-
-    lang, freq_dict, n_words = profile
-
-    profile = {
-        'name': lang,
-        'freq': freq_dict,
-        'n_words': n_words
-    }
-
 
 
 def load_profile(path_to_file: str) -> ProfileType | None:
