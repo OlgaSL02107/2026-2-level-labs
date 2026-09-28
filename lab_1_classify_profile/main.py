@@ -448,6 +448,8 @@ def detect_language_by_mse(
     mse_1 = compare_profiles_by_mse(unknown_profile, profile_1)
     mse_2 = compare_profiles_by_mse(unknown_profile, profile_2)
 
+    if mse_1 is None or mse_2 is None:
+        return None
 
     lang_1, _, _ = profile_1
     lang_2, _, _ = profile_2
