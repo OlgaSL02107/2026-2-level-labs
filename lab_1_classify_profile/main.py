@@ -37,10 +37,9 @@ def tokenize(text: str) -> Sequence[str] | None:
     for symbol in text:
         if symbol.isalpha():
             current_token.append(symbol.lower())
-        elif symbol.isspace():
-            if current_token:
-                tokens.append(''.join(current_token))
-                current_token = []
+        elif symbol.isspace() and current_token:
+            tokens.append(''.join(current_token))
+            current_token = []
 
     if current_token:
         tokens.append(''.join(current_token))
@@ -178,20 +177,21 @@ def create_language_profile(
 
 
     tokens = tokenize(text)
-    if tokens is None:
-            return None
+    filtered_tokens = None
+    freq_dict = None
 
-    filtered_tokens = remove_stop_words(tokens, stop_words)
-    if filtered_tokens is None:
-            return None
+    if tokens is not None:
+        filtered_tokens = remove_stop_words(tokens, stop_words)
 
-    freq_dict = calculate_frequencies(filtered_tokens)
+    if filtered_tokens is not None:
+        freq_dict = calculate_frequencies(filtered_tokens)
+
     if freq_dict is None:
         return None
 
     n_words = len(freq_dict)
 
-    return language, freq_dict, n_words
+    return (language, freq_dict, n_words)
 
 
 def check_profile(profile: ProfileType) -> bool:
