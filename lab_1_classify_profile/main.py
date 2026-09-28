@@ -178,10 +178,15 @@ def create_language_profile(
 
 
     tokens = tokenize(text)
-    filtered_tokens = remove_stop_words(tokens, stop_words)
-    freq_dict = calculate_frequencies(filtered_tokens)
+    if tokens is None:
+            return None
 
-    if tokens is None or filtered_tokens is None or freq_dict is None:
+    filtered_tokens = remove_stop_words(tokens, stop_words)
+    if filtered_tokens is None:
+            return None
+
+    freq_dict = calculate_frequencies(filtered_tokens)
+    if freq_dict is None:
         return None
 
     n_words = len(freq_dict)
