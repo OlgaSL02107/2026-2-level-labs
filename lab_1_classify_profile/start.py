@@ -2,7 +2,20 @@
 Language detection starter.
 """
 
-# pylint: disable=unused-variable, duplicate-code
+# pylint: disable=unused-variable, duplicate-code, too-many-return-statements
+from lab_1_classify_profile.main import (
+    calculate_frequencies,
+    collect_profiles,
+    create_language_profile,
+    detect_language_advanced,
+    detect_language_by_mse,
+    detect_language_by_top_n,
+    get_top_n_words,
+    print_report,
+    remove_stop_words,
+    save_profile,
+    tokenize,
+)
 
 from lab_1_classify_profile.main import (
     calculate_frequencies,
@@ -29,51 +42,55 @@ def main() -> None:
     with open("lab_1_classify_profile/assets/texts/en.txt", "r", encoding="utf-8") as file:
         en_text = file.read()
 
-    # Practical assignment 1-4
+    result = None
 
-    de_tokens = tokenize(de_text)
-    assert de_tokens is not None
+    tokenized_text = tokenize(de_text)
+    if tokenized_text is None:
+        return None
 
-    de_filt = remove_stop_words(de_tokens, stopwords)
-    assert de_filt is not None
+    text_without_stopwords = remove_stop_words(tokenized_text, stopwords)
+    if text_without_stopwords is None:
+        return None
 
-    de_freq = calculate_frequencies(de_filt)
-    assert de_freq is not None
+    calculated_frequencies = calculate_frequencies(text_without_stopwords)
 
-    top_7_words = get_top_n_words(de_freq, 7)
-    assert top_7_words is not None
+    if calculated_frequencies is None:
+        return None
 
-    print(f'Top 7 words in de_text: {top_7_words}')
+    unk_profile = create_language_profile("unknown", unknown_text, stopwords)
+    de_profile = create_language_profile("de", de_text, stopwords)
+    en_profile = create_language_profile("en", en_text, stopwords)
 
-    # Practical assignment 1-7
+    if (unk_profile is None
+        or de_profile is None
+        or en_profile is None):
+        return None
 
-    de_profile = create_language_profile('de', de_text, stopwords)
-    assert de_profile is not None
+    print(get_top_n_words(calculated_frequencies, 7))
+    print(detect_language_by_top_n(unk_profile, en_profile, de_profile, 15))
+    result = detect_language_by_mse(unk_profile, en_profile, de_profile)
 
-    unknown_profile = create_language_profile('unknown', unknown_text, stopwords)
-    assert unknown_profile is not None
+    save_profile(unk_profile, 'lab_1_classify_profile/assets/profiles')
+    save_profile(de_profile, 'lab_1_classify_profile/assets/profiles')
+    save_profile(en_profile, 'lab_1_classify_profile/assets/profiles')
 
-    en_profile = create_language_profile('en', en_text, stopwords)
-    assert en_profile is not None
+    list_of_paths = ['lab_1_classify_profile/assets/profiles/la.json',
+                     'lab_1_classify_profile/assets/profiles/de.json',
+                     'lab_1_classify_profile/assets/profiles/en.json']
+    collected_profiles = collect_profiles(list_of_paths)
 
-    assert check_profile(de_profile), 'Error: De profile invalid'
-    assert check_profile(unknown_profile), 'Error: Unknown profile invalid'
-    assert check_profile(en_profile), 'Error: En profile invalid'
+    if collected_profiles is None:
+        return None
 
-    detected_lang_top_n = detect_language_by_top_n(unknown_profile, de_profile, en_profile, 15)
-    assert detected_lang_top_n is not None
+    advanced_detection = detect_language_advanced(unk_profile, collected_profiles, 15)
 
-    print(f'Detected language by top-15 words: {detected_lang_top_n}')
+    if advanced_detection is None:
+        return None
 
-    # Practical assignment 1-10
+    print_report(unk_profile, advanced_detection, 15)
 
-    detected_lang_mse = detect_language_by_mse(unknown_profile, de_profile, en_profile)
-    assert detected_lang_mse is not None
-
-    print(f'Detected language by mse: {detected_lang_mse}')
-
-    result = detected_lang_mse
-    assert result, 'Detection result is None'
+    assert result, "Detection result is None"
+    return None
 
 
 if __name__ == "__main__":
