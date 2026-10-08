@@ -210,15 +210,6 @@ def train(
     None is returned
     """
 
-    if not isinstance(word_frequencies, dict):
-        return None
-
-    if not isinstance(num_merges, int) or isinstance(num_merges, bool):
-        return None
-
-    if num_merges < 0:
-        return None
-
 
 def get_vocabulary(
     word_frequencies: dict[tuple[str, ...], int], unknown_token: str
