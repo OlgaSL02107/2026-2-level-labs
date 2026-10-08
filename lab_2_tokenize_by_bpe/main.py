@@ -220,51 +220,6 @@ def train(
         return None
 
 
-    current_freq = word_frequencies
-
-    for _ in range(num_merges):
-        pairs = count_tokens_pairs(current_freq)
-
-        if pairs is None:
-            return None
-
-        if not pairs:
-            break
-
-        best_pair = None
-
-        for pair, count in pairs.items():
-            merged_token = pair[0] + pair[1]
-
-            if best_pair is None:
-                best_pair = pair
-                continue
-
-            best_token = best_pair[0] + best_pair[1]
-            best_count = pairs[best_pair]
-
-            if count > best_count:
-                best_pair = pair
-            elif count == best_count:
-                if len(merged_token) > len(best_token):
-                    best_pair = pair
-                elif (
-                    len(merged_token) == len(best_token)
-                    and merged_token < best_token
-                ):
-                    best_pair = pair
-
-        current_freq = merge_tokens(
-            current_freq,
-            best_pair,
-        )
-
-        if current_freq is None:
-            return None
-
-    return current_freq
-
-
 def get_vocabulary(
     word_frequencies: dict[tuple[str, ...], int], unknown_token: str
 ) -> dict[str, int] | None:
