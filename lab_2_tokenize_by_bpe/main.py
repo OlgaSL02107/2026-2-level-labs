@@ -227,11 +227,14 @@ def train(
         if not pairs:
             break
 
-        def get_pair_sorting_key(pair: tuple[str, str]) -> tuple[int, int, str]:
+        def get_pair_sorting_key(
+                rank_pair: tuple[str, str],
+                current_pairs: dict[tuple[str, str], int] = pairs
+        ) -> tuple[int, int, str]:
             return (
-                -pairs[pair],
-                -len(pair[0] + pair[1]),
-                pair[0] + pair[1],
+                -current_pairs[rank_pair],
+                -len(rank_pair[0] + rank_pair[1]),
+                rank_pair[0] + rank_pair[1],
             )
 
         best_pair = min(pairs, key = get_pair_sorting_key)
