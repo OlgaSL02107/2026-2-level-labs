@@ -9,7 +9,7 @@ from main import (
     collect_frequencies,
     decode,
     get_vocabulary,
-    train
+    train,
 )
 
 
