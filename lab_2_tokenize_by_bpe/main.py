@@ -229,19 +229,19 @@ def train(
 
         best_pair = min(
             pairs,
-            key=lambda pair: (
-                -pairs[pair],
+            key=lambda pair, x=pairs: (
+                -x[pair],
                 -(len(pair[0] + pair[1])),
                 pair[0] + pair[1],
             ),
         )
 
-        current_freq = merge_tokens(current_freq, best_pair)
+        current_freq_dict = merge_tokens(current_freq, best_pair)
 
-        if current_freq is None:
+        if current_freq_dict is None:
             return None
 
-    return current_freq
+    return current_freq_dict
 
 
 def get_vocabulary(
