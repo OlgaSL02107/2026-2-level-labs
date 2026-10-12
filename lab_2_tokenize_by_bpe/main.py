@@ -333,7 +333,7 @@ def decode(
         return None
 
     for key, value in vocabulary.items():
-        if not isinstance(key, str) or not isinstance(value, int) or isinstance(token_id, bool):
+        if not isinstance(key, str) or not isinstance(value, int) or isinstance(value, bool):
             return None
 
     if end_of_word_token is not None and not isinstance(end_of_word_token, str):
