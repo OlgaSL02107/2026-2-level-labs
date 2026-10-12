@@ -227,21 +227,26 @@ def train(
         if not pairs:
             break
 
-        best_pair = min(
-            pairs,
-            key=lambda pair, x=pairs: (
-                -x[pair],
-                -(len(pair[0] + pair[1])),
+        def get_pair_sorting_key(pair: tuple[str, str]) -> tuple[int, int, str]:
+            return (
+                -pairs[pair],
+                -len(pair[0] + pair[1]),
                 pair[0] + pair[1],
-            ),
-        )
+            )
 
-        current_freq_dict = merge_tokens(current_freq, best_pair)
+        best_pair = min(pairs, key = get_pair_sorting_key)
 
-        if current_freq_dict is None:
+        new_freq = merge_tokens(current_freq, best_pair)
+
+        if new_freq is None:
             return None
 
-    return current_freq_dict
+        current_freq = new_freq
+
+        if current_freq is None:
+            return None
+
+    return current_freq
 
 
 def get_vocabulary(
