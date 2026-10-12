@@ -5,7 +5,12 @@ BPE Tokenizer starter
 # pylint:disable=too-many-locals, unused-variable
 
 
-from lab_2_tokenize_by_bpe.main import collect_frequencies
+from main import (
+    collect_frequencies,
+    decode,
+    get_vocabulary,
+    train
+)
 
 
 def main() -> None:
@@ -20,7 +25,10 @@ def main() -> None:
         translation_encoded_raw = text_file.read()
 
     freq_dict = collect_frequencies(text, None, '</s>')
-    result = freq_dict
+    trained_freq = train(freq_dict, 100)
+    vocabulary = get_vocabulary(trained_freq, '<unk>')
+    encoded = [int(token_id) for token_id in translation_encoded_raw.replace(',', ' ').split()]
+    result = decode(encoded, vocabulary, '</s>')
     print(result)
 
     assert result, "Translation not working"
