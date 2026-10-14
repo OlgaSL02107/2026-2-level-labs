@@ -6,6 +6,7 @@ BPE and machine translation evaluation
 
 # pylint:disable=unused-argument
 from typing import Sequence
+import json
 
 
 def prepare_word(
@@ -212,14 +213,12 @@ def train(
     if not isinstance(word_frequencies, dict):
         return None
 
-    if not isinstance(num_merges, int) or num_merges < 0:
+    if not isinstance(num_merges, int) or isinstance(num_merges, bool) or num_merges < 0:
         return None
 
 
-    current_freq = word_frequencies
-
     for _ in range(num_merges):
-        pairs = count_tokens_pairs(current_freq)
+        pairs = count_tokens_pairs(word_frequencies)
 
         if pairs is None:
             return None
@@ -227,29 +226,36 @@ def train(
         if not pairs:
             break
 
-        def get_pair_sorting_key(
-                rank_pair: tuple[str, str],
-                current_pairs: dict[tuple[str, str], int] = pairs
-        ) -> tuple[int, int, str]:
-            return (
-                -current_pairs[rank_pair],
-                -len(rank_pair[0] + rank_pair[1]),
-                rank_pair[0] + rank_pair[1],
-            )
+        best_pair = None
 
-        best_pair = min(pairs, key = get_pair_sorting_key)
+        for pair, count in pairs.items():
+            if best_pair is None:
+                best_pair = pair
+                continue
 
-        new_freq = merge_tokens(current_freq, best_pair)
+            best_count = pairs[best_pair]
+            best_token = best_pair[0] + best_pair[1]
+            current_token = pair[0] + pair[1]
 
-        if new_freq is None:
+            if count > best_count:
+                best_pair = pair
+
+            elif count == best_count:
+                if len(current_token) > len(best_token):
+                    best_pair = pair
+
+                elif (
+                    len(current_token) == len(best_token)
+                    and current_token < best_token
+                ):
+                    best_pair = pair
+
+        word_frequencies = merge_tokens(word_frequencies, best_pair)
+
+        if word_frequencies is None:
             return None
 
-        current_freq = new_freq
-
-        if current_freq is None:
-            return None
-
-    return current_freq
+    return word_frequencies
 
 
 def get_vocabulary(
@@ -384,6 +390,48 @@ def tokenize_word(
     In case of corrupt input arguments, None is returned
     """
 
+    if not isinstance(word, tuple):
+        return None
+
+    if not isinstance(vocabulary, dict):
+        return None
+
+    if not isinstance(end_of_word, str) and end_of_word is not None:
+        return None
+
+    if not isinstance(unknown_token, str):
+        return None
+
+
+    word_to_tokens = []
+
+    for token in vocabulary:
+        if token != unknown_token:
+            word_to_tokens.append(token)
+
+    word_to_tokens.sort(key = lambda token: (-len(token), token))
+
+    symbols = list(word)
+
+    for token in word_to_tokens:
+        length = len(token)
+        id = 0
+
+        while id < len(symbols):
+            if ''.join(symbols[id : id + length]) == token:
+                symbols[id : id + length] = [token]
+            id += 1
+
+    encoded = []
+
+    for symb in symbols:
+        if symb not in vocabulary:
+            symb = unknown_token
+
+        encoded.append(vocabulary[symb])
+
+    return encoded
+
 
 def load_vocabulary(vocab_path: str) -> dict[str, int] | None:
     """
@@ -397,6 +445,17 @@ def load_vocabulary(vocab_path: str) -> dict[str, int] | None:
 
     In case of corrupt input arguments, None is returned
     """
+
+    if not isinstance(vocab_path, str):
+        return None
+
+    with open(vocab_path, "r", encoding="utf-8") as vocabulary_file:
+        vocabulary = json.load(vocabulary_file)
+
+    if not isinstance(vocabulary, dict):
+        return None
+
+    return vocabulary
 
 
 def encode(

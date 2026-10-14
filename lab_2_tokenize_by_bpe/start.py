@@ -5,7 +5,7 @@ BPE Tokenizer starter
 # pylint:disable=too-many-locals, unused-variable
 
 
-from lab_2_tokenize_by_bpe.main import (
+from main import (
     collect_frequencies,
     decode,
     get_vocabulary,
@@ -26,8 +26,10 @@ def main() -> None:
 
     freq_dict = collect_frequencies(text, None, '</s>')
     trained_freq = train(freq_dict, 100)
+
     if trained_freq is None:
         return
+
     vocabulary = get_vocabulary(trained_freq, '<unk>')
     encoded = [int(token_id) for token_id in translation_encoded_raw.replace(',', ' ').split()]
     result = decode(encoded, vocabulary, '</s>')
