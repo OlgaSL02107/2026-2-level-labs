@@ -413,12 +413,12 @@ def tokenize_word(
 
     for token in word_to_tokens:
         length = len(token)
-        id = 0
+        token_id = 0
 
-        while id < len(symbols):
-            if ''.join(symbols[id : id + length]) == token:
-                symbols[id : id + length] = [token]
-            id += 1
+        while token_id < len(symbols):
+            if ''.join(symbols[token_id : token_id + length]) == token:
+                symbols[token_id : token_id + length] = [token]
+            token_id += 1
 
     encoded = []
 
