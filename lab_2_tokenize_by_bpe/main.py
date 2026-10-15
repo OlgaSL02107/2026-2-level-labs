@@ -4,9 +4,10 @@ Lab 2.
 BPE and machine translation evaluation
 """
 
+import json
+
 # pylint:disable=unused-argument
 from typing import Sequence
-import json
 
 
 def prepare_word(
@@ -183,10 +184,7 @@ def merge_tokens(
 
         new_word = tuple(new_tokens)
 
-        if new_word in new_freq_dict:
-            new_freq_dict[new_word] += freq
-        else:
-            new_freq_dict[new_word] = freq
+        new_freq_dict[new_word] = new_freq_dict.get(new_word, 0) + freq
 
     return new_freq_dict
 
@@ -481,6 +479,39 @@ def encode(
     In case of corrupt input arguments or functions used return None,
     None is returned
     """
+
+    if not isinstance(original_text, str):
+        return None
+
+    if (
+        not isinstance(vocabulary, dict)
+        or not isinstance(unknown_token, str)
+    ):
+        return None
+
+    if (
+        start_of_word_token is not None and not isinstance(start_of_word_token, str)
+        or end_of_word_token is not None and not isinstance(end_of_word_token, str)
+    ):
+        return None
+
+
+    encoded_text = []
+
+    for raw_word in original_text.split():
+        word = prepare_word(raw_word, start_of_word_token, end_of_word_token)
+
+        if word is None:
+            return None
+
+        encoded_word = tokenize_word(word, vocabulary, end_of_word_token, unknown_token)
+
+        if encoded_word is None:
+            return None
+
+        encoded_text.extend(encoded_word)
+
+    return encoded_text
 
 
 def collect_ngrams(text: str, order: int) -> list[tuple[str, ...]] | None:
