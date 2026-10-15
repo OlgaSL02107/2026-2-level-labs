@@ -211,10 +211,6 @@ def train(
     if not isinstance(word_frequencies, dict):
         return None
 
-    for word in word_frequencies:
-        if word is None:
-            return None
-
     if not isinstance(num_merges, int) or isinstance(num_merges, bool) or num_merges < 0:
         return None
 
@@ -242,16 +238,14 @@ def train(
             if count > best_count:
                 best_pair = pair
 
-            elif count == best_count:
-                if len(current_token) > len(best_token):
-                    best_pair = pair
+            if (count, len(current_token)) > (best_count, len(best_token)):
+                best_pair = pair
+            elif count == best_count and len(current_token) == len(best_token) and current_token < best_token:
+                best_pair = pair
 
-                elif (
-                    len(current_token) == len(best_token)
-                    and current_token < best_token
-                ):
-                    best_pair = pair
 
+        if best_pair is None:
+            return None
 
         word_frequencies = merge_tokens(word_frequencies, best_pair)
 
