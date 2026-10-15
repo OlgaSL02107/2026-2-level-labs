@@ -240,7 +240,11 @@ def train(
 
             if (count, len(current_token)) > (best_count, len(best_token)):
                 best_pair = pair
-            elif count == best_count and len(current_token) == len(best_token) and current_token < best_token:
+            elif (
+                count == best_count
+                and len(current_token) == len(best_token)
+                and current_token < best_token
+            ):
                 best_pair = pair
 
 
