@@ -5,7 +5,8 @@ BPE Tokenizer starter
 # pylint:disable=too-many-locals, unused-variable
 
 
-from lab_2_tokenize_by_bpe.main import (
+from main import (
+    calculate_bleu,
     collect_frequencies,
     decode,
     encode,
@@ -49,6 +50,16 @@ def main() -> None:
 
     print(f'First 20 tokens: {rus_encoded}')
     print(f'Reference first 20 tokens: {russian_encoded_reference}')
+
+    model_decoded = decode(encoded, load_vocab, None)
+    model_decoded = model_decoded.replace('\u2581', ' ')
+
+    print(f'Model decode: {model_decoded}')
+    print(f'Reference: {text_reference_translation}')
+
+    bleu = calculate_bleu(model_decoded, text_reference_translation, 4)
+
+    print(f'BLEU: {bleu}')
 
 if __name__ == "__main__":
     main()

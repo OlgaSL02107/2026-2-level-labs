@@ -5,6 +5,7 @@ BPE and machine translation evaluation
 """
 
 import json
+import math
 
 # pylint:disable=unused-argument
 from typing import Sequence
@@ -171,11 +172,7 @@ def merge_tokens(
         index = 0
 
         while index < len(tokens):
-            if (
-                index < len(tokens) - 1 and
-                tokens[index] == pair[0] and
-                tokens[index + 1] == pair[1]
-            ):
+            if tuple(tokens[index : index + 2]) == pair:
                 new_tokens.append(pair[0] + pair[1])
                 index += 2
             else:
@@ -213,7 +210,6 @@ def train(
 
     if not isinstance(num_merges, int) or isinstance(num_merges, bool) or num_merges < 0:
         return None
-
 
     for _ in range(num_merges):
         pairs = count_tokens_pairs(word_frequencies)
@@ -403,7 +399,6 @@ def tokenize_word(
     if not isinstance(unknown_token, str):
         return None
 
-
     word_to_tokens = []
 
     for token in vocabulary:
@@ -531,6 +526,27 @@ def collect_ngrams(text: str, order: int) -> list[tuple[str, ...]] | None:
     In case of corrupt input arguments, None is returned
     """
 
+    if not isinstance(text, str):
+        return None
+
+    if not isinstance(order, int):
+        return None
+
+    if order < 1:
+        return None
+
+    ngrams = []
+
+    for symb in range(len(text) - order + 1):
+        ngram = []
+
+        for i in range(order):
+            ngram.append(text[symb + i])
+
+        ngrams.append(tuple(ngram))
+
+    return ngrams
+
 
 def calculate_precision(
     actual: Sequence[tuple[str, ...]], reference: Sequence[tuple[str, ...]]
@@ -548,6 +564,37 @@ def calculate_precision(
     In case of corrupt input arguments, None is returned.
     """
 
+    if (not isinstance(actual, (list, tuple)) or not isinstance(reference, (list, tuple))):
+        return None
+
+    for ngram in actual:
+        if not isinstance(ngram, tuple) or not ngram:
+            return None
+        for el in ngram:
+            if not isinstance(el, str):
+                return None
+
+    for ngram in reference:
+        if not isinstance(ngram, tuple) or not ngram:
+            return None
+        for el in ngram:
+            if not isinstance(el, str):
+                return None
+
+    if not actual or not reference:
+        return 0.0
+
+    actual_set = set(actual)
+    reference_set = set(reference)
+
+    match = 0
+
+    for ngram in actual_set:
+        if ngram in reference_set:
+            match += 1
+
+    return match / len(actual_set)
+
 
 def calculate_geo_mean(precisions: Sequence[float], max_order: int) -> float | None:
     """
@@ -562,6 +609,33 @@ def calculate_geo_mean(precisions: Sequence[float], max_order: int) -> float | N
 
     In case of corrupt input arguments, None is returned
     """
+
+    if not isinstance(precisions, (list, tuple)):
+        return None
+
+    if not isinstance(max_order, int):
+        return None
+
+    if not precisions:
+        return None
+
+    log_sum = 0.0
+
+    valid_precisions = precisions[:max_order]
+
+    for precision in valid_precisions:
+        if not isinstance(precision, (float, int)):
+            return None
+
+        if precision <= 0:
+            return 0.0
+
+        if precision > 1:
+            return None
+
+        log_sum += math.log(precision)
+
+    return math.exp((1 / max_order) * log_sum)
 
 
 def calculate_bleu(actual: str | None, reference: str, max_order: int = 3) -> float | None:
@@ -579,3 +653,38 @@ def calculate_bleu(actual: str | None, reference: str, max_order: int = 3) -> fl
     In case of corrupt input arguments or functions used return None,
     None is returned
     """
+
+    if not isinstance(actual, str):
+        return None
+
+    if not isinstance(reference, str):
+        return None
+
+    if not isinstance(max_order, int):
+        return None
+
+    if max_order < 1:
+        return None
+
+    precisions = []
+
+    for ngram_size in range(1, max_order + 1):
+        actual_ngrams = collect_ngrams(actual, ngram_size)
+        reference_ngrams = collect_ngrams(reference, ngram_size)
+
+        if actual_ngrams is None or reference_ngrams is None:
+            return None
+
+        precision = calculate_precision(actual_ngrams, reference_ngrams)
+
+        if precision is None:
+            return None
+
+        precisions.append(precision)
+
+    geo_mean = calculate_geo_mean(precisions, max_order)
+
+    if geo_mean is None:
+        return None
+
+    return geo_mean * 100
