@@ -5,6 +5,7 @@ BPE Tokenizer starter
 # pylint:disable=too-many-locals, unused-variable
 
 
+from lab_2_tokenize_by_bpe import main
 from main import (
     calculate_bleu,
     collect_frequencies,
