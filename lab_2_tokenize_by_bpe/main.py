@@ -567,19 +567,18 @@ def calculate_precision(
     if (not isinstance(actual, (list, tuple)) or not isinstance(reference, (list, tuple))):
         return None
 
-    for ngram in actual:
-        if not isinstance(ngram, tuple) or not ngram:
-            return None
-        for el in ngram:
-            if not isinstance(el, str):
-                return None
+    act_valid = all(
+        isinstance(ngram, tuple) and ngram and all(isinstance(el, str) for el in ngram)
+        for ngram in actual
+    )
 
-    for ngram in reference:
-        if not isinstance(ngram, tuple) or not ngram:
-            return None
-        for el in ngram:
-            if not isinstance(el, str):
-                return None
+    ref_valid = all(
+        isinstance(ngram, tuple) and ngram and all(isinstance(el, str) for el in ngram)
+        for ngram in reference
+    )
+
+    if not act_valid or not ref_valid:
+        return None
 
     if not actual or not reference:
         return 0.0
