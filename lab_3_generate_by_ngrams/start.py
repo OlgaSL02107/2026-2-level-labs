@@ -23,11 +23,11 @@ def main() -> None:
     text_processor = TextProcessor('_')
     encoded_text = text_processor.encode(text)
     if encoded_text is None:
-        return None
+        return
 
     decoded_text = text_processor.decode(encoded_text)
     if decoded_text is None:
-        return None
+        return
 
     print('Encoded text:')
     print(encoded_text[-100:])
