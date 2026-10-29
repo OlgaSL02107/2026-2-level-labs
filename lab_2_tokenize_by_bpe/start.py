@@ -31,9 +31,14 @@ def main() -> None:
     with open("lab_2_tokenize_by_bpe/assets/ru_encoded.txt", "r", encoding="utf-8") as text_file:
         russian_encoded_reference = text_file.read()
 
-
+    print('Mark 4: Word frequency dictionary.')
     freq_dict = collect_frequencies(text, None, '</s>')
-    trained_freq = train(freq_dict, 100)
+    for i, (tokenized_word, freq) in enumerate(freq_dict.items()):
+        if i < 5:
+            print(f'{tokenized_word}: {freq}')
+
+    print('Mark 6: Decoded text.')
+    trained_freq = train(freq_dict, 10)
 
     if trained_freq is None:
         return
@@ -45,12 +50,14 @@ def main() -> None:
 
     assert result, "Translation not working"
 
+    print('Mark 8: Encoded texts.')
     load_vocab = load_vocabulary("lab_2_tokenize_by_bpe/assets/vocab.json")
     rus_encoded = encode(russian_text, load_vocab, '\u2581', None, '<unk>')
 
     print(f'First 20 tokens: {rus_encoded}')
     print(f'Reference first 20 tokens: {russian_encoded_reference}')
 
+    print('Mark 10: Comparison and BLEU')
     model_decoded = decode(encoded, load_vocab, None)
     model_decoded = model_decoded.replace('\u2581', ' ')
 

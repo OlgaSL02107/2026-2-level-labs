@@ -211,8 +211,22 @@ def train(
     if not isinstance(num_merges, int) or isinstance(num_merges, bool) or num_merges < 0:
         return None
 
-    for _ in range(num_merges):
+    for i in range(1, num_merges + 1):
+        print(f'Merge number: {i}')
+
         pairs = count_tokens_pairs(word_frequencies)
+
+        print('Words frequency dictionary')
+        for index, (word, freq) in enumerate(word_frequencies.items()):
+            if index == 10:
+                break
+            print(f'{word}: {freq}')
+
+        print('Counted pairs')
+        for index, (pair, freq) in enumerate(pairs.items()):
+            if index == 10:
+                break
+            print(f'{pair}: {freq}')
 
         if pairs is None:
             return None
@@ -247,7 +261,16 @@ def train(
         if best_pair is None:
             return None
 
+        print(f'Best pair is {best_pair}. New token is {best_pair[0] + best_pair[1]}')
+        print(f'Frequency of best pait: {pairs[best_pair]}')
+
         word_frequencies = merge_tokens(word_frequencies, best_pair)
+
+        print('Updated word frequencies dictionary')
+        for index, (word, freq) in enumerate(word_frequencies.items()):
+            if index == 10:
+                break
+            print(f'{word}: {freq}')
 
         if word_frequencies is None:
             return None
