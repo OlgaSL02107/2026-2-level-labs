@@ -28,7 +28,7 @@ class TextProcessor:
             not isinstance(end_of_word_token, str)
             or len(end_of_word_token) != 1
         ):
-            return None
+            return
 
         self._end_of_word_token = end_of_word_token
         self._storage = {end_of_word_token: 0}
