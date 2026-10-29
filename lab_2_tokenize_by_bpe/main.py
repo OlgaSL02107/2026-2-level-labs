@@ -202,34 +202,10 @@ def train(
     ):
         return None
 
-<<<<<<< HEAD
-    for i in range(1, num_merges + 1):
-        print(f'Merge number: {i}')
-
-        pairs = count_tokens_pairs(word_frequencies)
-
-        print('Words frequency dictionary')
-        for index, (word, freq) in enumerate(word_frequencies.items()):
-            if index == 10:
-                break
-            print(f'{word}: {freq}')
-
-        print('Counted pairs')
-        for index, (pair, freq) in enumerate(pairs.items()):
-            if index == 10:
-                break
-            print(f'{pair}: {freq}')
-
-        if pairs is None:
-            return None
-
-        if not pairs:
-=======
     for _ in range(num_merges):
         pairs_frequencies = count_tokens_pairs(word_frequencies)
 
         if not pairs_frequencies:
->>>>>>> bf876d9f25982c189f00f967f9e15b23da42abc8
             break
 
         sorted_pair_frequencies = sorted(pairs_frequencies.items(),
@@ -239,39 +215,7 @@ def train(
             "".join(item[0])
         ))
 
-<<<<<<< HEAD
-        for pair, count in pairs.items():
-            if best_pair is None:
-                best_pair = pair
-                continue
-
-            best_count = pairs[best_pair]
-            best_token = best_pair[0] + best_pair[1]
-            current_token = pair[0] + pair[1]
-
-            if count > best_count:
-                best_pair = pair
-
-            if (count, len(current_token)) > (best_count, len(best_token)):
-                best_pair = pair
-            elif (
-                count == best_count
-                and len(current_token) == len(best_token)
-                and current_token < best_token
-            ):
-                best_pair = pair
-
-
-        if best_pair is None:
-            return None
-
-        print(f'Best pair is {best_pair}. New token is {best_pair[0] + best_pair[1]}')
-        print(f'Frequency of best pait: {pairs[best_pair]}')
-
-        word_frequencies = merge_tokens(word_frequencies, best_pair)
-=======
         word_frequencies = merge_tokens(word_frequencies, sorted_pair_frequencies[0][0])
->>>>>>> bf876d9f25982c189f00f967f9e15b23da42abc8
 
         print('Updated word frequencies dictionary')
         for index, (word, freq) in enumerate(word_frequencies.items()):
