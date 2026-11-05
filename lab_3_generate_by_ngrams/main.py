@@ -569,10 +569,7 @@ class GreedyTextGenerator:
             if not next_tokens:
                 break
 
-            best_token = max(
-                next_tokens,
-                key=lambda token, nt = next_tokens: (nt[token], token),
-            )
+            best_token = max((score, token) for token, score in next_tokens.items())[1]
 
             sequence.append(best_token)
 
