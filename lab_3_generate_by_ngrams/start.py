@@ -4,7 +4,11 @@ Generation by NGrams starter
 
 # pylint:disable=too-many-locals, unused-import, unused-variable
 
-from lab_3_generate_by_ngrams.main import TextProcessor
+from lab_3_generate_by_ngrams.main import (
+    GreedyTextGenerator,
+    NGramLanguageModel,
+    TextProcessor,
+)
 
 
 def main() -> None:
@@ -37,6 +41,19 @@ def main() -> None:
     result = decoded_text
     assert result
 
+    print('NGram LM check task')
+
+    model = NGramLanguageModel(encoded_text, 7)
+    is_freq_dict_built = model.build()
+
+    print('Model built:', is_freq_dict_built)
+
+    print('Mark 6 task')
+
+    greedy_generator = GreedyTextGenerator(model, text_processor)
+    generated_text = greedy_generator.run('Vernon', 51)
+    print('Generated text:')
+    print(generated_text)
 
 if __name__ == "__main__":
     main()
