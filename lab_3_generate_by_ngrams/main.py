@@ -533,12 +533,6 @@ class GreedyTextGenerator:
             text_processor (TextProcessor): A TextProcessor instance to handle text processing
         """
 
-        if (
-            not isinstance(language_model, NGramLanguageModel)
-            or not isinstance(text_processor, TextProcessor)
-        ):
-            return None
-
         self._model = language_model
         self._text_processor = text_processor
 
@@ -577,7 +571,7 @@ class GreedyTextGenerator:
 
             best_token = max(
                 next_tokens,
-                key=lambda token: (next_tokens[token], token),
+                key=lambda token, nt = next_tokens: (nt[token], token),
             )
 
             sequence.append(best_token)
