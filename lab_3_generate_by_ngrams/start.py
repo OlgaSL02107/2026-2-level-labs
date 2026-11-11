@@ -5,6 +5,7 @@ Generation by NGrams starter
 # pylint:disable=too-many-locals, unused-import, unused-variable
 
 from lab_3_generate_by_ngrams.main import (
+    BeamSearchTextGenerator,
     GreedyTextGenerator,
     NGramLanguageModel,
     TextProcessor,
@@ -44,9 +45,9 @@ def main() -> None:
     print('NGram LM check task')
 
     model = NGramLanguageModel(encoded_text, 7)
-    is_freq_dict_built = model.build()
+    model_built = model.build()
 
-    print('Model built:', is_freq_dict_built)
+    print('Model built:', model_built)
 
     print('Mark 6 task')
 
@@ -54,6 +55,16 @@ def main() -> None:
     generated_text = greedy_generator.run('Vernon', 51)
     print('Generated text:')
     print(generated_text)
+
+    print('Mark 8 task')
+    generator = BeamSearchTextGenerator(
+        language_model=model,
+        text_processor=text_processor,
+        beam_width=3,
+    )
+    generated = generator.run('Vernon', 56)
+    print('Generated text:')
+    print(generated)
 
 if __name__ == "__main__":
     main()
