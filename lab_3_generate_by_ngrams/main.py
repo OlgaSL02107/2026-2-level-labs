@@ -74,7 +74,7 @@ class TextProcessor:
             words_processed += 1
 
             if words_processed < valid_words:
-                    tokens.append(self._end_of_word_token)
+                tokens.append(self._end_of_word_token)
             else:
                 if not text[-1].isalpha():
                     tokens.append(self._end_of_word_token)
@@ -403,6 +403,7 @@ class NGramLanguageModel:
         Args:
             frequencies (dict): Computed in advance frequencies for n-grams
         """
+
 
     def build(self) -> bool:
         """
@@ -758,10 +759,12 @@ class BeamSearchTextGenerator:
         None is returned
         """
 
-        if not isinstance(prompt, str) or not prompt:
-            return None
-
-        if not isinstance(seq_len, int) or seq_len <= 0:
+        if (
+            not isinstance(prompt, str)
+            or not prompt
+            or not isinstance(seq_len, int)
+            or seq_len <= 0
+        ):
             return None
 
         encoded = self._text_processor.encode(prompt)
