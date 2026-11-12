@@ -37,17 +37,15 @@ def main() -> None:
     if decoded_text is None:
         return
 
-    print('Encoded text:')
-    print(encoded_text[-100:])
-    print('\nDecoded text:')
-    print(decoded_text[-100:])
+    print(
+        f'Encoded text:\n{encoded_text[-100:]}\n\n'
+        f'Decoded text:\n{decoded_text[-100:]}'
+    )
 
     print('\nNGram LM check task')
 
     model = NGramLanguageModel(encoded_text, 7)
-    model_built = model.build()
-
-    print('Model built:', model_built)
+    print('Model built:', model.build())
 
     print('\nMark 6 task')
 
@@ -80,12 +78,9 @@ def main() -> None:
         tuple(models),
         reader.get_text_processor(),
     )
-    generated_text = backoff_generator.run('Vernon', 100)
-
-    result = generated_text
+    result = backoff_generator.run('Vernon', 100)
     assert result
-
-    print(generated_text)
+    print(result)
 
     print('\nMark 10 task 2')
     prompt = 'Harry looked at'
@@ -102,26 +97,28 @@ def main() -> None:
         word_models[ngram_size] = word_model
 
     greedy_continue = GreedyTextGenerator(word_models[4], word_processor)
-    print('\nGreedy algorithm continue:')
-    print(greedy_continue.run(prompt, 12))
+    print(
+        '\nGreedy algorithm continue:\n'
+        f'{GreedyTextGenerator(word_models[4], word_processor).run(prompt, 12)}'
+    )
 
     beam_continue = BeamSearchTextGenerator(
         language_model=word_models[4],
         text_processor=word_processor,
         beam_width=3,
     )
-    print('\nBeam Search algorithm continue:')
-    print(beam_continue.run(prompt, 12))
+    print(f'\nBeam Search algorithm continue:\n{beam_continue.run(prompt, 12)}')
 
     backoff_continue = BackOffGenerator(
         tuple(word_models.values()),
         word_processor,
     )
-    print('\nBackOff algorithm continue:')
-    print(backoff_continue.run(prompt, 12))
+    print(f'\nBackOff algorithm continue:\n{backoff_continue.run(prompt, 12)}')
 
-    print('\nComparison to greedy generated text at the level of letters:')
-    print(greedy_generator.run(prompt, 60))
+    print(
+        '\nComparison to greedy generated text at the level of letters:\n'
+        f'{greedy_generator.run(prompt, 60)}'
+    )
 
 
 if __name__ == "__main__":
