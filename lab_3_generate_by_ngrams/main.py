@@ -57,11 +57,7 @@ class TextProcessor:
 
         tokens = []
         words = text.split()
-        valid_words = 0
-
-        for word in words:
-            if any(symb.isalpha() for symb in word):
-                valid_words += 1
+        valid_words = sum(1 for word in words if any(symb.isalpha() for symb in word))
 
         words_processed = 0
         for word in words:
@@ -72,11 +68,8 @@ class TextProcessor:
             tokens.extend(cleaned_word)
             words_processed += 1
 
-            if words_processed < valid_words:
+            if words_processed < valid_words or not text[-1].isalpha():
                 tokens.append(self._end_of_word_token)
-            else:
-                if not text[-1].isalpha():
-                    tokens.append(self._end_of_word_token)
 
         if not tokens:
             return None
@@ -157,8 +150,7 @@ class TextProcessor:
         encoded_corpus = []
         for symb in tokens:
             self._put(symb)
-            symb_id = self.get_id(symb)
-            if symb_id is None:
+            if (symb_id := self.get_id(symb)) is None:
                 return None
             encoded_corpus.append(symb_id)
 
@@ -366,14 +358,16 @@ class WordProcessor(TextProcessor):
         In case of corrupt input arguments, None is returned.
         In case decoded corpus does not contain any words, None is returned.
         """
-        if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
+        if (
+            not isinstance(decoded_corpus, tuple)
+            or not decoded_corpus
+            or not all(isinstance(token, str) for token in decoded_corpus)
+        ):
             return None
 
         sentences = []
         current_sentence = []
         for token in decoded_corpus:
-            if not isinstance(token, str):
-                return None
             if token == self._end_of_word_token:
                 if current_sentence:
                     sentence = ' '.join(current_sentence).capitalize()

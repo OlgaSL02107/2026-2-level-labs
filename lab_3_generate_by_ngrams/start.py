@@ -78,9 +78,8 @@ def main() -> None:
         tuple(models),
         reader.get_text_processor(),
     )
-    result = backoff_generator.run('Vernon', 100)
-    assert result
-    print(result)
+    backoff_generated = backoff_generator.run('Vernon', 100)
+    print(backoff_generated)
 
     print('\nMark 10 task 2')
     prompt = 'Harry looked at'
@@ -96,7 +95,6 @@ def main() -> None:
         word_model.build()
         word_models[ngram_size] = word_model
 
-    greedy_continue = GreedyTextGenerator(word_models[4], word_processor)
     print(
         '\nGreedy algorithm continue:\n'
         f'{GreedyTextGenerator(word_models[4], word_processor).run(prompt, 12)}'
@@ -119,6 +117,9 @@ def main() -> None:
         '\nComparison to greedy generated text at the level of letters:\n'
         f'{greedy_generator.run(prompt, 60)}'
     )
+
+    result = backoff_generated
+    assert result
 
 
 if __name__ == "__main__":
