@@ -129,6 +129,8 @@ class Sentence:
         Args:
             encoded_sentence (EncodedSentence): Encoded sequence of integers.
         """
+        if not isinstance(encoded_sentence, (tuple, list)):
+            raise IncorrectArgumentError
         for integer in encoded_sentence:
             if not isinstance(integer, int):
                 raise IncorrectArgumentError
@@ -142,8 +144,11 @@ class Sentence:
         Args:
             preprocessed_sentence (PreprocessedSentence): Preprocessed sequence of tokens.
         """
-        if not isinstance(preprocessed_sentence, PreprocessedSentence):
+        if not isinstance(preprocessed_sentence, (tuple, list)):
             raise IncorrectArgumentError
+        for token in preprocessed_sentence:
+            if not isinstance(token, str):
+                raise IncorrectArgumentError
 
         self._preprocessed = tuple(preprocessed_sentence)
 
