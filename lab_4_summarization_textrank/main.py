@@ -54,8 +54,8 @@ class Sentence:
 
         self._text = text
         self._position = position
-        self._preprocessed: tuple[str, ...] = ()
-        self._encoded: tuple[int, ...] = ()
+        self._preprocessed = ()
+        self._encoded = ()
 
     def __eq__(self, other: object) -> bool:
         """
