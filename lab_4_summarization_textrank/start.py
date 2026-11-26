@@ -3,7 +3,10 @@ TextRank summarizer starter
 """
 
 # pylint:disable=unused-variable, unused-import, duplicate-code
-from lab_4_summarization_textrank.main import SentencePreprocessor
+from lab_4_summarization_textrank.main import (
+    SentenceEncoder,
+    SentencePreprocessor,
+)
 
 
 def main() -> None:
@@ -23,8 +26,16 @@ def main() -> None:
 
     punctuation = ('.', ',', '!', '?', ':', ';', '-', '(', ')', '"', "'")
     preprocessor = SentencePreprocessor(stop_words, punctuation)
+    encoder = SentenceEncoder()
 
-    result = preprocessor.get_sentences(text)
+    sentences = preprocessor.get_sentences(text)
+    encoder.encode_sentences(sentences)
+    for sentence in sentences[:5]:
+        print(sentence)
+        print(sentence.get_preprocessed())
+        print(sentence.get_encoded())
+
+    result = encoder
     assert result
 
 

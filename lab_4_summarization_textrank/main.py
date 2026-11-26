@@ -276,12 +276,12 @@ class SentencePreprocessor:
         sentences = []
         start = 0
         for i in range(len(format_text) - 2):
-            if(
+            if (
                 format_text[i] in '.!?'
                 and format_text[i+1] == ' '
                 and format_text[i+2].isupper()
             ):
-                sentences.append(Sentence(format_text[start : i + 1], len(sentences)))
+                sentences.append(Sentence(format_text[start:i + 1], len(sentences)))
                 start = i + 2
 
         sentences.append(Sentence(format_text[start:], len(sentences)))
@@ -348,6 +348,7 @@ class SentenceEncoder:
         Returns:
             str: String representation of the encoder.
         """
+        return f'SentenceEncoder(vocabulary_size={len(self._word2id)})'
 
     def _learn_indices(self, tokens: Sequence[str]) -> None:
         """
@@ -356,6 +357,15 @@ class SentenceEncoder:
         Args:
             tokens (Sequence[str]): Sequence of string tokens.
         """
+        if not isinstance(tokens, (tuple, list)):
+            raise IncorrectArgumentError
+        for token in tokens:
+            if not isinstance(token, str):
+                raise IncorrectArgumentError
+            if token not in self._word2id:
+                self.last += 1
+                self._word2id[token] = self.last
+                self._id2word[self.last] = token
 
     def encode_sentences(self, sentences: Sequence[Sentence]) -> None:
         """
@@ -364,6 +374,19 @@ class SentenceEncoder:
         Args:
             sentences (Sequence[Sentence]): Sequence of sentences to encode.
         """
+        if not isinstance(sentences, (tuple, list)):
+            raise IncorrectArgumentError
+        for sentence in sentences:
+            if not isinstance(sentence, Sentence):
+                raise IncorrectArgumentError
+
+            preprocessed_tokens = sentence.get_preprocessed()
+            self._learn_indices(preprocessed_tokens)
+            encoded_sentences = tuple(
+                self._word2id[token]
+                for token in preprocessed_tokens
+            )
+            sentence.set_encoded(encoded_sentences)
 
 
 def calculate_similarity(sequence: Sequence, other_sequence: Sequence) -> float:
@@ -377,6 +400,20 @@ def calculate_similarity(sequence: Sequence, other_sequence: Sequence) -> float:
     Returns:
         float: Jaccard similarity score between the two sequences.
     """
+    if (
+        not isinstance(sequence, (list, tuple))
+        or not isinstance(other_sequence, (list, tuple))
+    ):
+        raise IncorrectArgumentError
+    if len(sequence) == 0 or len(other_sequence) == 0:
+        return 0.0
+
+    elements = set(sequence)
+    other_elements = set(other_sequence)
+    intersection_value = len(elements & other_elements)
+    union_value = len(elements | other_elements)
+
+    return intersection_value / union_value
 
 
 class TextGraph:
